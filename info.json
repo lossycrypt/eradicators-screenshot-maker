@@ -3,7 +3,7 @@
   "version": "13.10.01",
   "title": "Screenshot Hotkey",
   "author": "eradicator",
-  "description": "Press the screenshot key to take a screenshot with some settings.",
+  "description": "Press the screenshot key (default F12) to take a screenshot with some settings.",
   "dependencies": ["base >= 0.13.10"],
   "factorio_version": "0.13"
 }
