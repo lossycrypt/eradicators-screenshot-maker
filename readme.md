@@ -8,3 +8,5 @@ Filename   : screenshot_<current-game-tick>.png
 show_entity_info : true  (shows 'alt'-info like interter arrows and assembler recipies)  
 show_gui         : false (doesn't seem to do anything currently)  
 anti_alias       : false (quadtruples system burden increasing likelyhood of game freeze)  
+
+Resolution and Zoom are stored for the duration of the session.
