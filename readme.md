@@ -1,4 +1,4 @@
-Adds a hotkey that opens a small gui to take screenshots.
+Adds a hotkey (default F12) that opens a small gui to take screenshots.
 
 Default values are:  
 Resolution : 2048 x 2048  
