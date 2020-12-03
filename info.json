@@ -1,9 +1,14 @@
 {
-  "name": "ScreenshotHotkey",
-  "version": "13.10.01",
-  "title": "Screenshot Hotkey",
-  "author": "eradicator",
-  "description": "Press the screenshot key (default F12) to take a screenshot with some settings.",
-  "dependencies": ["base >= 0.13.10"],
-  "factorio_version": "0.13"
+  "title"           : "Eradicator's Screenshot Maker Deluxe 3.0",
+  "name"            : "eradicators-screenshot-maker",
+  "version"         : "3.0.0",
+  "author"          : "eradicator",
+  "contact"         : "/msg eradication on irc.esper.net",
+  "license"         : "Creative Commons Attribution-NoDerivatives 4.0 International License",
+  "factorio_version": "1.0",
+  "description"     :  
+    "Makes tile-perfect screenshots at any resolution!",
+  "dependencies"    : [
+    "base >= 1.0.0"
+    ]
 }

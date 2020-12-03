@@ -1,0 +1,33 @@
+﻿# https://git-scm.com/docs/gitignore
+# https://jasonstitt.com/gitignore-whitelisting-patterns
+
+# Ignore everything
+*
+
+# But descend into directories
+!*/
+
+# Keep these special files
+!licence.txt
+!readme.md
+!changelog.txt
+!attribution.txt
+!.gitignore
+
+# Keep everything in modportal
+!/_modportal/**
+
+# Keep text files
+!*.lua
+!*.cfg
+!*.json
+
+# Keep assets
+!*.png
+!*.ogg
+
+# Block underscore prefixed files
+_*
+
+# But keep special files
+!__init__.lua

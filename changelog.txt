@@ -1,0 +1,41 @@
+---------------------------------------------------------------------------------------------------
+Version: 3.0.0
+Date: 2020-12-03
+  Major Features:
+    - Draw tile-aligned border while drawing.
+---------------------------------------------------------------------------------------------------
+Version: 2.1.3
+Date: 2020-12-03
+  Major Features:
+    - Updated factorio version to 1.0.
+---------------------------------------------------------------------------------------------------
+Version: 2.1.1
+Date: 2019-08-03
+  Bugfixes:
+    - Manual zoom override does not change the size of the captured area anymore.
+    - Added in-game mod menu thumbnail.
+---------------------------------------------------------------------------------------------------
+Version: 2.1.0
+Date: 2019-06-09
+  Major Features:
+    - Updated factorio version to 0.17.
+  Internal:
+    - Camera is now a cursor-only item.
+---------------------------------------------------------------------------------------------------
+Version: 2.0.0
+Date: 2018-07-09
+  Bugfixes:
+    - Fixed possible multiplayer desync.
+    - Renamed "zoom" to "scale" internally to avoid name conflict with LuaGuiElement method
+    - Changed version name scheming to be independant of factorio version.
+    - Added range check so invalid resolutions don't cause errors.
+  Major Features:
+    - Added ability to draw a camera box around the target area instead of specifying coordinates.
+    - Added ability to hold shift while using the camera tool to skip the GUI and take a screenshot directly.
+    - Added a camera shutter confirmation sound.
+    - Added tile-perfect screenshots per default. Non-perfect screenshots are still possible using the GUI.
+---------------------------------------------------------------------------------------------------
+Version: 1.0.0
+Date: 2016-07-30
+  Major Features:
+    - Initial Release.
