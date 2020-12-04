@@ -1,14 +1,13 @@
 {
-  "title"           : "Eradicator's Screenshot Maker Deluxe 3.0",
-  "name"            : "eradicators-screenshot-maker",
-  "version"         : "2.1.3",
-  "author"          : "eradicator",
-  "contact"         : "/msg eradication on irc.esper.net",
-  "license"         : "Creative Commons Attribution-NoDerivatives 4.0 International License",
-  "factorio_version": "1.0",
-  "description"     :  
-    "Makes tile-perfect screenshots at any resolution!",
-  "dependencies"    : [
+  "title"            : "Eradicator's Screenshot Maker Deluxe 3.0",
+  "name"             : "eradicators-screenshot-maker",
+  "author"           : "eradicator",
+  "version"          : "3.0.1",
+  "factorio_version" : "1.0",
+  "contact"          : "Check the mod portal \"Discussions\" tab (link below).",
+  "license"          : "Creative Commons Attribution-NoDerivatives 4.0 International License",
+  "description"      : "Makes tile-perfect screenshots at any resolution!",
+  "dependencies"     : [
     "base >= 1.0.0"
-    ]
+  ]
 }

@@ -1,304 +1,241 @@
 --TODO: clean item-with-inventory
 --TODO: Implement file format support. "[Rseding91] It can output bmp, jpg, gif, tif, and png."
 
+-- -------------------------------------------------------------------------- --
+-- CONSTANTS                                                                  --
+-- -------------------------------------------------------------------------- --
+
+
 local main_gui_frame_name = 'screenshot-hotkey-main-frame'
 local selection_tool_name = 'er:screenshot-tool'
 
-local function get_camera_settings(pindex)
-  global.camera_settings = global.camera_settings or {}
-  if not global.camera_settings[pindex] then
-    global.camera_settings[pindex] = {w = 2048, h = 2048, zoom = 1.0, camera_tick = -1}
-    end
-  return global.camera_settings[pindex]
-  end
 
-local function get_player_data(e)
-  local pindex = e.player_index
-  local player = game.players[pindex]
-  local pgui   = player.gui.center
-  return player,pindex,pgui
-  end
+local ITEM_NAME = 'er:screenshot-camera'
+-- local INPUT_NAME = ITEM_NAME
 
-local function tointeger(str)
-  return math.floor(tonumber(str))
-  end
+local erlib = require 'minilib'
 
-local function area_to_camera_settings(pindex,area)
-  local camera_settings = get_camera_settings(pindex)
-  --clamp to tile edges
-  area.left_top.x     = math.floor(area.left_top.x    )
-  area.left_top.y     = math.floor(area.left_top.y    )
-  area.right_bottom.x = math.ceil (area.right_bottom.x)
-  area.right_bottom.y = math.ceil (area.right_bottom.y)
-  -- calculate width/height in pixels and center position
-  camera_settings.w = area.right_bottom.x - area.left_top.x
-  camera_settings.h = area.right_bottom.y - area.left_top.y
-  camera_settings.x = area.left_top.x + camera_settings.w/2
-  camera_settings.y = area.left_top.y + camera_settings.h/2
-  camera_settings.w = camera_settings.w * 32 --one tile is 32 pixels
-  camera_settings.h = camera_settings.h * 32
-  -- print(serpent.block(camera_settings))
-  end
+local PLUGIN_NAME   = 'screenshot-maker'
+local SAVEDATA_PATH = {'plugin_manager', 'plugins', PLUGIN_NAME}
 
-local function openScreenshotGui(player,pindex,pgui,area)
-  local camera_settings = get_camera_settings(pindex)
-  if area then area_to_camera_settings(pindex,area) end
+-- -------------------------------------------------------------------------- --
+-- X                                                                          --
+-- -------------------------------------------------------------------------- --
 
-  --remove old instance
-  if pgui[main_gui_frame_name] then
-    pgui[main_gui_frame_name].destroy()
-    end
-  pgui.clear() --HOTFIX: when galactipad is open and ctrl+f12 wants to open Screenshot gui the next add() fails???
-  --FRAME
-  player.opened = pgui.add {
-    type = 'frame',
-    name = main_gui_frame_name,
-    caption = {'screenshot-hotkey.title'},
-    direction = 'vertical',
-  }
-  print(serpent.line(player.opened))
-  print(serpent.line(player.gui.center.children_names))
-  local pmain = pgui[main_gui_frame_name]
-  --INFO
-  for i=1,5 do
-    pmain.add {
-      type = 'label',
-      name = 'info'..i,
-      caption = {'screenshot-hotkey.info'..i},
-    }
-    end
+local Savedata
 
-  --TABLE
-  pmain.add {
-    type = 'table',
-    name = 'table',
-    -- colspan = 2, --pre 0.16
-    column_count = 2,
-  }
-  pmain = pmain.table
-
-  --TABLE CONTENT TEXTFIELD
-  local labels = {'xres','yres','xpos','ypos','scale','file'} -- renamed "zoom" to "scale" due to name collision with base function
-  for i=1,#labels do
-    pmain.add {
-      type = 'label',
-      name = labels[i],
-      caption = {'screenshot-hotkey.'..labels[i]},
-      }
-    pmain.add {
-      type = 'textfield',
-      name = labels[i]..'_text',
-      }
-    end
-
-  --TABLE CONTENT BOOLEAN
-  local bools = {'show_info','anti_alias','show_gui'}
-  for i=1,#bools do
-    pmain.add {
-      type = 'label',
-      name = bools[i],
-      caption = {'screenshot-hotkey.'..bools[i]},
-      }
-    pmain.add {
-      type = 'checkbox',
-      name = bools[i]..'_bool',
-      state = false,
-      }
-    end
-  -- button take
-  pmain.add {
-    type = 'button',
-    name = 'screenshot-hotkey-quit-button',
-    caption = {'screenshot-hotkey.quit'},
-  }
-  -- button quit
-  pmain.add {
-    type = 'button',
-    name = 'screenshot-hotkey-take-button',
-    caption = {'screenshot-hotkey.take'},
-  }
-
+-- local ScreenshotArea = {}
+-- local ScreenshotArea_mt = {__index = ScreenshotArea}
+-- 
+-- 
+-- local ScreenshotPlayer = {}
+-- 
+-- setmetatable(ScreenshotPlayer, {
+--   __call = function(_, pindex)
+--     return game.get_player(pindex)
+--     end,
+--   })
+-- 
+-- local function get_player_screenshot_area(pindex, index)
+--   index = index or 1 --future use: multiple areas per player
+--   
+--   -- Savedata = global.plugin_manager.plugins['screenshot-maker']
+--   
+--   -- pdata = erlib.Table.sget(Savedata, {'players', pindex})
+--   
+--   local new = {
+--     p = 
+--     }
+--   
+--   return setmetatable(
+--     erlib.Table.sget(Savedata, {'players', pindex, 'screenshot_area', index}, {}),
+--     ScreenshotArea_mt
+--     )
+--   
+--   end
   
-  pmain['xres_text'    ].text = camera_settings.w 
-  pmain['yres_text'    ].text = camera_settings.h
-  pmain['xpos_text'    ].text = camera_settings.x or math.floor(player.position.x)
-  pmain['ypos_text'    ].text = camera_settings.y or math.floor(player.position.y)
-  pmain['scale_text'   ].text = camera_settings.zoom
-  pmain['file_text'].text = 'screenshot_'..game.tick
-  
-  pmain['show_info_bool' ].state = true
-  pmain['anti_alias_bool'].state = false
-  pmain['show_gui_bool'  ].state = false
-  -- print('Debug1: '..player.opened.name)
-end
 
-local function takeScreenshot(e,camera_settings)
-  local player,pindex,pgui = get_player_data(e)
-  local args= {}
+-- -------------------------------------------------------------------------- --
+-- Savedata                                                                   --
+-- -------------------------------------------------------------------------- --
+
+local function get_pdata (pindex)
+  return erlib.Table.sget(Savedata, {'players', pindex}, {})
+  end
+
+local function reset_pdata(pindex)
+  local pdata = get_pdata(pindex)
+  rendering.destroy(pdata.rect_uid or -1)
+  erlib.Table.set(Savedata, {'players', pindex}, {})
+  end
   
-  if not camera_settings then
-    local pmain = pgui[main_gui_frame_name].table
-    args.zoom = tonumber (pmain['scale_text'   ].text) --may be decimal
-    args.xpos = tonumber (pmain['xpos_text'    ].text)
-    args.ypos = tonumber (pmain['ypos_text'    ].text)
-    args.xres = tointeger(pmain['xres_text'    ].text) * args.zoom --compensate manul zoom override
-    args.yres = tointeger(pmain['yres_text'    ].text) * args.zoom
-    args.file =           pmain['file_text'].text
-    args.show =           pmain['show_info_bool' ].state
-    args.anti =           pmain['anti_alias_bool'].state
-    args.gui  =           pmain['show_gui_bool'].state
+  
+local function init()
+  Savedata = erlib.Table.sget(global, SAVEDATA_PATH, {})
+  end
+  
+local function onload()
+  Savedata = erlib.Table.get(global, SAVEDATA_PATH)
+  end
+  
+script.on_init(init)
+script.on_configuration_changed(init)
+script.on_load(onload)
+
+
+-- -------------------------------------------------------------------------- --
+-- Shortcut                                                                   --
+-- -------------------------------------------------------------------------- --
+
+
+
+local function give_camera_to_player(p)
+  if p.clean_cursor() then
+    p.cursor_stack.set_stack { name = ITEM_NAME }
+    end
+  end
+
+script.on_event(ITEM_NAME, function(e)
+  print('hotkey!')
+  give_camera_to_player(game.get_player(e.player_index))
+  end)
+  
+script.on_event(defines.events.on_lua_shortcut, function(e)
+  print('shortcut!')
+  if e.prototype_name == ITEM_NAME then
+    give_camera_to_player(game.get_player(e.player_index))
+    end
+  end)
+  
+  
+  
+  
+-- -------------------------------------------------------------------------- --
+-- MAIN                                                                       --
+-- -------------------------------------------------------------------------- --
+
+script.on_event(defines.events.on_player_cursor_stack_changed, function(e)
+  local p = game.players[e.player_index]
+  local cs = p.cursor_stack
+  if (not cs.valid_for_read) or (cs.name ~= ITEM_NAME) then
+    reset_pdata(e.player_index)
+    print('data reset!', serpent.line(get_pdata(e.player_index)) )
+    end
+  end)
+
+
+local COLOR_WHITE = {r=1, g=1, b=1}
+
+local function update_rect(rect, uid, p)
+  if not rendering.is_valid(uid or -1) then
+    uid = rendering.draw_rectangle{
+      color = COLOR_WHITE,
+      width = 2,
+      filled = false,
+      left_top = rect.lt,
+      right_bottom = rect.rb,
+      surface = p.surface,
+      time_to_live = 60*2,
+      -- time_to_live = 30,
+      players = {p},
+      visible = true,
+      draw_on_ground = false,
+      only_in_alt_mode = false,
+      }
   else
-    args.xpos = camera_settings.x
-    args.ypos = camera_settings.y
-    args.xres = camera_settings.w
-    args.yres = camera_settings.h
-    args.zoom = 1.0
-    args.file = 'screenshot_'..game.tick
-    args.show = true
-    args.anti = false
-    args.gui  = false
+    rendering.set_left_top    (uid, rect.lt)
+    rendering.set_right_bottom(uid, rect.rb)
     end
-  
-  -- check input validity
-  local ranges = {
-    xpos = {-1e6,1e6}, --maximum map size
-    ypos = {-1e6,1e6},
-    xres = args.anti and {1,8192} or {1,16384} , --limited by API
-    yres = args.anti and {1,8192} or {1,16384} ,
-    zoom = {0.05,1000}, --prevent freezes
-    }
-  for _,arg in pairs{'xres','yres','xpos','ypos','zoom'} do
-    if   (args[arg] == nil)
-      or (args[arg] < ranges[arg][1])
-      or (args[arg] > ranges[arg][2])
-      then
-      player.print({'screenshot-hotkey.wrong-value',{'screenshot-hotkey.'..arg}})
-      return
-      end
-    end
+  return uid
+  end
 
-  -- take screenshot
-  game.take_screenshot{
-    player           = player                , --:: string or LuaPlayer or uint (optional): Center position on this player?
-    by_player        = player                , --:: string or LuaPlayer or uint (optional): If defined, the screenshot will only be taken for this player.
-    position         = {args.xpos,args.ypos} , --:: Position (optional)
-    resolution       = {args.xres,args.yres} , --:: Position (optional)
-    zoom             = args.zoom             , --:: double (optional)
-    path             = args.file..'.png'     , --:: string (optional): Path to save the screenshot in
-    show_gui         = args.gui              , --:: boolean (optional): Include game GUI in the screenshot?
-    show_entity_info = args.show             , --:: boolean (optional): Include entity info (alt-mode)?
-    anti_alias       = args.anti             , --:: boolean (optional): Render in double resolution and scale down (including GUI)? 
+local function blip (target,p)
+    local rnd = function() return math.random(100,255) end
+    local def = {
+      color = {r=rnd(),g=rnd(),b=rnd()},
+      radius = 0.2,
+      filled = true,
+      target = target or env.that or env.it,
+      time_to_live = duration or 300,
+      surface = p.surface,
+      }
+    return target,rendering.draw_circle(def) end
+  
+local function swap_if_gtr(a,b)
+  if a <= b then return a,b
+  else return b,a end
+  end
+
+local function vector_to_natural_rect(v)
+  local l,r = swap_if_gtr(v.a,v.x)
+  local t,b = swap_if_gtr(v.b,v.y)
+  
+  return {
+    lt = {math.floor(l),math.floor(t)},
+    rb = {math.ceil(r),math.ceil(b)},
     }
+  end
+  
+  
+script.on_event(defines.events.on_player_used_capsule, function(e)
+  -- print(serpent.line(e.position))
+  
+  local pindex= e.player_index
+  local p     = game.get_player(pindex)
+  local pdata = get_pdata(pindex)
+  
+  local clicked_position = e.position
+  
+  
+  if not pdata.vector then
+  
+    pdata.vector = {}
+  
+    --cursor-to-rect-distance isn't nice yet.
+    -- cursor should always be inside the "dragged" tile.
     
-  -- close gui (only if camera settings were not given)
-  if pgui[main_gui_frame_name] then
-    pgui[main_gui_frame_name].destroy()
-    end
-  -- save camera settings
-  local camera_settings = get_camera_settings(pindex)
-  camera_settings = {
-    w = args.xres, h = args.yres,
-    -- x = args.xpos, y = args.ypos, --never store position
-    zoom = args.zoom}
-  -- play sound to indicate everything went fine
-  player.play_sound{
-    path = 'er:camera-click',
-    volume_modifier = 0.9,
-    }
-end
+    pdata.vector.a = clicked_position.x
+    pdata.vector.b = clicked_position.y
+    
+    -- pdata.vector.a = 0
+    -- pdata.vector.b = 0
 
-local function toggleScreenshotGui(e)
-  local player,pindex,pgui = get_player_data(e)
-  if pgui[main_gui_frame_name] then
-    pgui[main_gui_frame_name].destroy()
-  else
-    openScreenshotGui(player,pindex,pgui)
-    end
-end
-  
-local function closeScreenshotGui(e)
-  local player,pindex,pgui = get_player_data(e)
-  if pgui[main_gui_frame_name] then
-    pgui[main_gui_frame_name].destroy()
-    end
-  end
+    
+    pdata.vector.x = clicked_position.x
+    pdata.vector.y = clicked_position.y
 
--- ON EVENT
-script.on_event('er:screenshot-hotkey',toggleScreenshotGui)
-script.on_event(defines.events.on_gui_closed,closeScreenshotGui)
+    pdata.move = {x='x', y='y'}
+    
+  else --corner pulling of existant rect
+  
+    --todo: update move keys if axis crossed?
+    
+    
+    end
+    
+    
+  pdata.vector[pdata.move.x] = clicked_position.x
+  pdata.vector[pdata.move.y] = clicked_position.y
+  
+  
+  pdata.rect_uid = update_rect(
+    vector_to_natural_rect(pdata.vector),
+    pdata.rect_uid,
+    p
+    )
+  
+  print(
+    serpent.line(pdata.vector),
+    serpent.line(vector_to_natural_rect(pdata.vector))
+    )
+    
+  -- blip({x=pdata.vector.a,y=pdata.vector.b}, p)
+  -- blip({x=pdata.vector.x,y=pdata.vector.y}, p)
+    
+    
+  blip(e.position, p) -- clicked pos
+  
+  end)
+  
+  
 
-local guiclicks = {['screenshot-hotkey-take-button'] = takeScreenshot      ,
-                   ['screenshot-hotkey-quit-button'] = closeScreenshotGui ,}
-script.on_event(defines.events.on_gui_click, function(e)
-  if guiclicks[e.element.name] then guiclicks[e.element.name](e) end
-  -- local f = guiclicks[e.element.name] if f then f(e) end
-  end)
-
---PLAYER USED CAMERA TOOL
-script.on_event(defines.events.on_player_selected_area,function(e)
-  if e.item ~= selection_tool_name then return end
-  local player,pindex,pgui = get_player_data(e)
-  openScreenshotGui(player,pindex,pgui,e.area)
-  end)
-
---PLAYER USED CAMERA TOOL (ALT MODE)
-script.on_event(defines.events.on_player_alt_selected_area,function(e)
-  if e.item ~= selection_tool_name then return end
-  local player,pindex,pgui = get_player_data(e)
-  local camera_settings = get_camera_settings(pindex)
-  area_to_camera_settings(pindex,e.area)
-  takeScreenshot(e,camera_settings)
-  end)
-  
---PLAYER WANTS CAMERA TOOL
-script.on_event('er:screenshot-tool',function(e)
-  local player,pindex,pgui = get_player_data(e)
-  if player.cursor_stack.valid_for_read --give only one tool
-    and (player.cursor_stack.name == selection_tool_name)
-    then return end
-  if player.clean_cursor() then
-    player.cursor_stack.set_stack(selection_tool_name)
-    local camera_settings = get_camera_settings(pindex)
-    camera_settings.camera_tick = e.tick
-    end
-  end)
-  
---PURGE CAMERA TOOL FROM INVENTORY (deprecated in 0.17+)
---[[
-script.on_event({'er:controls:clean-cursor', --must work when inventory full!
-  defines.events.on_player_cursor_stack_changed}, function(e)
-  local player,pindex,pgui = get_player_data(e)
-  local camera_settings = get_camera_settings(pindex)
-  --prevent deleting in the same tick it is created
-  if camera_settings.camera_tick == e.tick then return end
-  --clean cursor stack
-  if player.cursor_stack.valid_for_read
-    and (player.cursor_stack.name == selection_tool_name)
-    then player.cursor_stack.clear() end
-  --clean opened entitiy
-  if player.opened and (player.opened_gui_type == defines.gui_type.entity) then
-    player.opened.remove_item{name=selection_tool_name,count=4e9}
-    end
-  --clean player inventories (main+toolbar)
-  player.remove_item{name=selection_tool_name,count=4e9}
-  --clean player trash slots
-  local trash = player.get_inventory(defines.inventory.player_trash)
-  if trash then
-    trash.remove{name=selection_tool_name,count=4e9}
-    end
-  --clean items with inventory?
-  --clean selected entity? (ctrl+click quick filling)
-  --clean item dropped on belt?
-  end)
-]]
-  
-script.on_event(defines.events.on_player_dropped_item,function(e)
-  local player,pindex,pgui = get_player_data(e)
-  if e.entity.stack and (e.entity.stack.name == selection_tool_name) then
-    e.entity.destroy()
-    end
-  end)
-  
-  
-  
-  
