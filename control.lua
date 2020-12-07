@@ -13,7 +13,11 @@ local selection_tool_name = 'er:screenshot-tool'
 local ITEM_NAME = 'er:screenshot-camera'
 -- local INPUT_NAME = ITEM_NAME
 
+local ITEM_NAME2 = ITEM_NAME .. '-2'
+
 local erlib = require 'minilib'
+
+local SelectionRectangle = require 'SelectionRectangle'
 
 local PLUGIN_NAME   = 'screenshot-maker'
 local SAVEDATA_PATH = {'plugin_manager', 'plugins', PLUGIN_NAME}
@@ -65,8 +69,11 @@ local function get_pdata (pindex)
 
 local function reset_pdata(pindex)
   local pdata = get_pdata(pindex)
-  rendering.destroy(pdata.rect_uid or -1)
-  erlib.Table.set(Savedata, {'players', pindex}, {})
+  rendering.destroy(pdata.rect_uid or -1) --legacy
+  if pdata.selection_rectangle then
+    pdata.selection_rectangle:reset()
+    end
+  erlib.Table.clear(pdata)
   end
   
   
@@ -76,6 +83,11 @@ local function init()
   
 local function onload()
   Savedata = erlib.Table.get(global, SAVEDATA_PATH)
+  for _, pdata in pairs(Savedata.players) do
+    if pdata.selection_rectangle then
+      SelectionRectangle.reclassify(pdata.selection_rectangle)
+      end
+    end
   end
   
 script.on_init(init)
@@ -135,7 +147,8 @@ local function update_rect(rect, uid, p)
       left_top = rect.lt,
       right_bottom = rect.rb,
       surface = p.surface,
-      time_to_live = 60*2,
+      time_to_live = nil, --infinite
+      -- time_to_live = 60*2,
       -- time_to_live = 30,
       players = {p},
       visible = true,
@@ -147,6 +160,13 @@ local function update_rect(rect, uid, p)
     rendering.set_right_bottom(uid, rect.rb)
     end
   return uid
+  end
+
+local function update_corners(pdata, p)
+  for i = 1, 4 do
+  
+  
+    end
   end
 
 local function blip (target,p)
@@ -171,13 +191,68 @@ local function vector_to_natural_rect(v)
   local t,b = swap_if_gtr(v.b,v.y)
   
   return {
-    lt = {math.floor(l),math.floor(t)},
-    rb = {math.ceil(r),math.ceil(b)},
+    lt = {x = math.floor(l), y = math.floor(t)},
+    rb = {x = math.ceil (r), y = math.ceil (b)},
+    }
+  end
+  
+local function start_new_rect(pdata, position)
+  pdata.vector = {
+    a = position.x,
+    b = position.y,
+    x = position.x,
+    y = position.y,
+    }
+  pdata.rect = vector_to_natural_rect(pdata.vector)
+  end
+  
+local function isPointInRect(point, rect)
+  if  (rect.lt.x < point.x) and (rect.rb.x > point.x)
+  and (rect.lt.y < point.y) and (rect.rb.y > point.y)
+    then return true
+    else return false
+    end
+  end
+  
+local function PointToRect(point, radius)
+  -- radius = radius or 0.75
+  radius = radius or 1.25
+  return {
+    lt = {x = point.x - radius, y = point.y - radius},
+    rb = {x = point.x + radius, y = point.y + radius},
+    }
+  end
+  
+local function RectStretch(rect, offset)
+  return {
+    lt = {x = rect.lt.x - offset, y = rect.lt.y - offset},
+    rb = {x = rect.rb.x + offset, y = rect.rb.y + offset},
     }
   end
   
   
-script.on_event(defines.events.on_player_used_capsule, function(e)
+local function on_capsule_v2(e)
+  
+  if e.item.name ~= ITEM_NAME then return end
+  
+  local pindex= e.player_index
+  local p     = game.get_player(pindex)
+  local pdata = get_pdata(pindex)
+  
+  if not pdata.selection_rectangle then
+    pdata.selection_rectangle = SelectionRectangle.new(pindex)
+  else
+    SelectionRectangle.reclassify(pdata.selection_rectangle)
+    end
+  
+  pdata.selection_rectangle:click(e.position)
+  
+  
+  end
+  
+
+  
+local function on_capsule_v1 (e)
   -- print(serpent.line(e.position))
   
   local pindex= e.player_index
@@ -187,26 +262,66 @@ script.on_event(defines.events.on_player_used_capsule, function(e)
   local clicked_position = e.position
   
   
-  if not pdata.vector then
   
-    pdata.vector = {}
   
-    --cursor-to-rect-distance isn't nice yet.
-    -- cursor should always be inside the "dragged" tile.
+  -- init new
+  -- if (not pdata.vector) or (not isPointInRect(clicked_position, RectStretch(pdata.rect, 5))) then
+  if (not pdata.vector) then
+  
+    if pdata.rect then
+      print('new!')
+      print(serpent.line(clicked_position), serpent.line(RectStretch(pdata.rect, 1)))
+      print( isPointInRect(clicked_position, RectStretch(pdata.rect, 1)) )
+      end
+      
+    if not pdata.vector then
+      print('no vector')
+      end
     
-    pdata.vector.a = clicked_position.x
-    pdata.vector.b = clicked_position.y
+    reset_pdata(pindex)
+    start_new_rect(pdata, clicked_position)
     
-    -- pdata.vector.a = 0
-    -- pdata.vector.b = 0
+    -- active corner
+    pdata.move = {
+      x = 'x',
+      y = 'y',
+      }
 
-    
-    pdata.vector.x = clicked_position.x
-    pdata.vector.y = clicked_position.y
 
-    pdata.move = {x='x', y='y'}
+  -- 
+  else
+
+    --left top
+    if isPointInRect(clicked_position, PointToRect{x=pdata.rect.lt.x, y=pdata.rect.lt.y}) then
+      pdata.vector.a = pdata.rect.rb.x
+      pdata.vector.b = pdata.rect.rb.y
+      
+    --right top
+    elseif isPointInRect(clicked_position, PointToRect{x=pdata.rect.rb.x, y=pdata.rect.lt.y}) then
+      pdata.vector.a = pdata.rect.lt.x
+      pdata.vector.b = pdata.rect.rb.y
     
-  else --corner pulling of existant rect
+    --right bottom
+    elseif isPointInRect(clicked_position, PointToRect{x=pdata.rect.rb.x, y=pdata.rect.rb.y}) then
+      pdata.vector.a = pdata.rect.lt.x
+      pdata.vector.b = pdata.rect.lt.y
+    
+    --left bottom
+    elseif isPointInRect(clicked_position, PointToRect{x=pdata.rect.lt.x, y=pdata.rect.rb.y}) then
+      pdata.vector.a = pdata.rect.rb.x
+      pdata.vector.b = pdata.rect.lt.y
+      
+      end
+  
+  
+  
+    -- if not isPointInRect(pdata.rect, clicked_position)
+  
+  
+  
+  -- corner pulling of existant rect
+  
+  
   
     --todo: update move keys if axis crossed?
     
@@ -214,12 +329,15 @@ script.on_event(defines.events.on_player_used_capsule, function(e)
     end
     
     
+    
+    
   pdata.vector[pdata.move.x] = clicked_position.x
   pdata.vector[pdata.move.y] = clicked_position.y
   
+  pdata.rect = vector_to_natural_rect(pdata.vector)
   
   pdata.rect_uid = update_rect(
-    vector_to_natural_rect(pdata.vector),
+    pdata.rect,
     pdata.rect_uid,
     p
     )
@@ -235,7 +353,10 @@ script.on_event(defines.events.on_player_used_capsule, function(e)
     
   blip(e.position, p) -- clicked pos
   
-  end)
+  end
   
   
 
+-- script.on_event(defines.events.on_player_used_capsule, on_capsule_v1)
+script.on_event(defines.events.on_player_used_capsule, on_capsule_v2)
+  

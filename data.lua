@@ -79,11 +79,10 @@ data:extend{{
 
 
 --[[
-  
 data:extend{{
   -- This allows loading the selection-tool type item when mods are removed
   type = 'selection-tool',
-  name = ITEM_NAME,
+  name = ITEM_NAME .. '-2',
   -- localised_name = {'item-name.blueprint'},
   icon = asset '/camera.png',
   icon_size = 96,
@@ -104,85 +103,93 @@ data:extend{{
   alt_selection_cursor_box_type = 'copy',
   show_in_library = false
   }}
+--]]
 
---]]  
+
 
 data:extend{{
-
   type = 'capsule',
   name = ITEM_NAME,
-  
   -- flags = {"hidden", "only-in-cursor", "spawnable"},
-  flags = {"hidden", "only-in-cursor"},
   flags = {"hidden", "only-in-cursor","not-stackable"}, --not stackable flag removes stack size number! :D
   -- draw_label_for_cursor_render = false,
-  
+  mouse_cursor = "selection-tool-cursor",
   icons = ICONS_96,
-  
   radius_color = {a=0}, -- don't show the radius
-  
   stack_size = 1, -- abuse stacksize to show selection size?
   stackable = false,
-  
   capsule_action = {
     type = 'throw',
     uses_stack = false,
-    
-    
     attack_parameters = {
       type = 'projectile',
       range = 1e7,
       cooldown = 2, -- 33 milliseconds
-      
       ammo_type = {
         category = 'melee',
         }
-      
       },
-      
---[[
-    attack_parameters = {
-        type = "projectile",
-        ammo_category = "grenade",
-        cooldown = 30,
-        projectile_creation_distance = 0.6,
-        range = 20,
-        ammo_type =
-        {
-          category = "grenade",
-          target_type = "position",
-          action =
-          {
-            {
-              type = "direct",
-              action_delivery =
-              {
-                type = "projectile",
-                projectile = "cluster-grenade",
-                starting_speed = 0.3
-              }
-            },
-            -- {
-              -- type = "direct",
-              -- action_delivery =
-              -- {
-                -- type = "instant",
-                -- target_effects =
-                -- {
-                  -- {
-                    -- type = "play-sound",
-                    -- sound = sounds.throw_projectile,
-                  -- },
-                -- }
-              -- }
-            -- }
-          } 
-        }
-      },
-      
---]]
-      
     }
-  
-
   }}
+
+  
+--[[
+-- Artillery shows artillery-turrents-in-range count and errors if that's 0
+  
+data:extend{{
+  type = 'capsule',
+  name = ITEM_NAME,
+  -- flags = {"hidden", "only-in-cursor", "spawnable"},
+  flags = {"hidden", "only-in-cursor","not-stackable"}, --not stackable flag removes stack size number! :D
+  -- draw_label_for_cursor_render = false,
+  mouse_cursor = "selection-tool-cursor",
+  icons = ICONS_96,
+  radius_color = {a=0}, -- don't show the radius
+  stack_size = 1, -- abuse stacksize to show selection size?
+  stackable = false,
+  capsule_action = {
+    type = "artillery-remote", -- artillery type can be used from map
+    flare = "artillery-flare-2"
+    },
+  }}
+
+data:extend{{
+    type = "artillery-flare",
+    name = "artillery-flare-2",
+    icon = "__base__/graphics/icons/artillery-targeting-remote.png",
+    icon_size = 64, icon_mipmaps = 4,
+    flags = {"placeable-off-grid", "not-on-map"},
+    map_color = {r=1, g=0.5, b=0},
+    -- life_time = 60 * 60,
+    life_time = 0,
+    initial_height = 0,
+    initial_vertical_speed = 0,
+    initial_frame_speed = 1,
+    -- shots_per_flare = 1,
+    shots_per_flare = 0,
+    -- early_death_ticks = 3 * 60,
+    early_death_ticks = 0,
+    pictures =
+    {
+      {
+        filename = "__core__/graphics/shoot-cursor-red.png",
+        priority = "low",
+        width = 258,
+        height = 183,
+        frame_count = 1,
+        scale = 1,
+        flags = {"icon"}
+      },
+      --{
+      --  filename = "__base__/graphics/entity/sparks/sparks-02.png",
+      --  width = 36,
+      --  height = 32,
+      --  frame_count = 19,
+      --  line_length = 19,
+      --  shift = {0.03125, 0.125},
+      --  tint = { r = 1.0, g = 0.9, b = 0.0, a = 1.0 },
+      --  animation_speed = 0.3,
+      --}
+    }
+  }}
+--]]
