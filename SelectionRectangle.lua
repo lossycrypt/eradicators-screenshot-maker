@@ -1,4 +1,29 @@
-﻿
+﻿-- (c) eradicator a.k.a lossycrypt, 2017-2020, not seperately licensable
+
+--------------------------------------------------
+-- A scripted selection rectangle usable with any tool.
+--
+-- Features:
+--  + Resizable and movable via drag+drop
+--  + Rendered via LuaRendering
+--  + Heuristically detects "dragging" as a sequence of very fast clicks
+--    like those produced by a capsule that fires every 2 ticks.
+--
+-- Usage:
+--  SelectionRectangle.new(PlayerSpecification) creates a new rectangle instance.
+--
+--  SelectionRectangle.reclassify(rect) reattaches the metatable in on_load. 
+--
+--  SelectionRectangle.click(Position)
+--
+--  SelectionRectangle.draw() -- draws the rect into the world / updates the drawing.
+--                            -- should be called after every click()
+--
+--  SelectionRectangle.reset() -- resets everything except the player reference
+
+
+
+
 -- -------------------------------------------------------------------------- --
 -- CONSTANTS                                                                  --
 -- -------------------------------------------------------------------------- --
@@ -31,6 +56,8 @@ local function blip (target, p)
     surface = p.surface,
     }
   end
+
+  
   
 -- -------------------------------------------------------------------------- --
 -- Rect                                                                       --
@@ -74,20 +101,14 @@ function Rect.natural_rectangle_from_vector(vector)
     }
   end
   
+  
+  
 -- -------------------------------------------------------------------------- --
 -- SelectionRectangle                                                         --
 -- -------------------------------------------------------------------------- --
 
-
 local SelectionRectangle = {}
 local obj_mt = {__index = SelectionRectangle}
-
-
-setmetatable(SelectionRectangle, {
-  __call = function(_)
-    error('not implemented')
-    end,
-  })
 
   
 -- initialize new
@@ -96,10 +117,11 @@ function SelectionRectangle.new(pspec)
   local self = {
     player  = p,
     pindex  = p.index,
-    surface = p.surface,
+    -- surface = p.surface,
     render_uids = {},
     }
-  return setmetatable(self, obj_mt)
+  setmetatable(self, obj_mt):reset()
+  return self
   end
   
   
@@ -117,8 +139,8 @@ function SelectionRectangle:set_coordinates(l,t,r,b)
 local keep = {
   player = true,
   pindex = true,
-  surface = true,
-  render_uids = true,
+  -- surface = true,
+  render_uids = true, -- just the empty table
   }
 function SelectionRectangle:reset()
   -- @todo: surface and player are permanent?
@@ -131,6 +153,7 @@ function SelectionRectangle:reset()
       self[k] = nil
       end
     end
+  -- self.a, self.b, self.x, self.y = 0, 0, 0, 0
   end
   
   
@@ -150,12 +173,8 @@ function SelectionRectangle:purge_invalid_render_uids()
   end
   
 
-  
-
-  
-
 -- draws the rectangle into the world
-local COLOR_WHITE = {r=1, g=1, b=1}
+local COLOR_WHITE = {r=0.8, g=0.8, b=0.8, a=0.8}
 function SelectionRectangle:draw()
   --
   self:purge_invalid_render_uids()
@@ -168,7 +187,8 @@ function SelectionRectangle:draw()
       filled           = false           ,
       left_top         = {0,0}           ,
       right_bottom     = {0,0}           ,
-      surface          = self.surface    ,
+      -- surface          = self.surface    ,
+      surface          = self.player.surface    ,
       time_to_live     = nil             ,
       players          = {self.player}   ,
       visible          = true            ,
@@ -184,11 +204,7 @@ function SelectionRectangle:draw()
   end
   
 
-function SelectionRectangle:get_outer_corner_rectangle(kx, ky)
-  return Rect.from_point {x = self.outer_rect[kx], y = self.outer_rect[ky] }
-  end
-
--- a non-diagonal line between "a" and "b"  
+-- a non-diagonal line between points "a" and "b"  
 function Rect.from_line(a, b, width)
   width = width or 0.01
   -- vertical
@@ -208,6 +224,11 @@ function Rect.from_line(a, b, width)
     end
   end
   
+
+function SelectionRectangle:get_outer_corner_rectangle(kx, ky)
+  return Rect.from_point {x = self.outer_rect[kx], y = self.outer_rect[ky] }
+  end
+  
   
 function SelectionRectangle:get_outer_edge_rectangle(ka, kb, kx, ky)
   return Rect.from_line(
@@ -222,20 +243,28 @@ function SelectionRectangle:update_outer_rect()
   return self.outer_rect
   end
 
+  
+function SelectionRectangle:get_selected_area()
+  local rect
+  if self.a then
+    rect = self:update_outer_rect()
+  else
+    rect = {l = 0, t = 0, r = 0, b = 0}
+    end
+  local lt = {x = rect.l, y = rect.t}
+  local rb = {x = rect.r, y = rect.b}
+  return {
+    lt = lt, left_top     = lt,
+    rb = rb, right_bottom = rb,
+    }
+  end
+  
+
+local drag_timeout = 60/4 -- in ticks
+local corner_detection_radius = 0.99
+local edge_detection_radius   = 0.99
 function SelectionRectangle:click(position)
   -- @future: split click/drag?
-  
-  local drag_timeout = 60/4 -- ~0.25 seconds
-  local corner_detection_radius = 0.99
-  local edge_detection_radius   = 0.99
-  
-  
-  -- 却下！ trying to filter out "outside" clicks also blocks very fast mouse movement.
-  
-  -- if self.outer_rect and not Rect.contains_point(self.outer_rect, position, 5*corner_detection_radius) then 
-    -- print('outside')
-    -- return
-    -- end
   
   -- create new
   if (not self.a) then
@@ -243,14 +272,13 @@ function SelectionRectangle:click(position)
     self:set_coordinates(position.x, position.y)
     self.drag_mode, self.drag_x, self.drag_y = 'drag', true, true
     
-    
   -- change corner only when not dragging
   elseif (not self.last_click_tick) or (self.last_click_tick + drag_timeout < game.tick) then
     
     -- outside: ignore
     if self.outer_rect and not Rect.contains_point(self.outer_rect, position, 0) then 
       self.drag_mode, self.drag_x, self.drag_y = 'none', nil, nil
-      return
+      return self
       end
     
     local outer_rect = self:update_outer_rect()
@@ -264,6 +292,7 @@ function SelectionRectangle:click(position)
     local right_edge  = self:get_outer_edge_rectangle('r','t','r','b')
     local bottom_edge = self:get_outer_edge_rectangle('l','b','r','b')
     local left_edge   = self:get_outer_edge_rectangle('l','t','l','b')
+    
     
     -- corner: left top
     if Rect.contains_point(lt_corner, position, corner_detection_radius) then
@@ -284,8 +313,8 @@ function SelectionRectangle:click(position)
     elseif Rect.contains_point(lb_corner, position, corner_detection_radius) then
       self.a, self.b = outer_rect.r, outer_rect.t
       self.drag_mode, self.drag_x, self.drag_y = 'drag', true, true
-    
-    
+
+      
     -- edge: top
     elseif Rect.contains_point(top_edge, position, edge_detection_radius) then
       self.a, self.b = outer_rect.l, outer_rect.b
@@ -310,18 +339,16 @@ function SelectionRectangle:click(position)
       self.y         = outer_rect.t
       self.drag_mode, self.drag_x, self.drag_y = 'drag', true, false
 
+      
     -- inside: move
     elseif Rect.contains_point(self.outer_rect, position, 0) then 
       self.drag_mode, self.drag_x, self.drag_y = 'move', nil, nil
       self.last_click_position = position
       
       -- try to prevent visual rect resizing by perfectly clamping vector
-      -- @todo: doesn't work perfectly yet. a center + fixed rect approach might work better.
       self.a, self.b = outer_rect.l + 0.5, outer_rect.t + 0.5
       self.x, self.y = outer_rect.r - 0.5, outer_rect.b - 0.5
-      
-      self.drag_dx = 0 -- drag accumulator
-      self.drag_dy = 0
+      self.drag_dx, self.drag_dy = 0, 0 -- drag accumulator
       
       end
     end
@@ -333,7 +360,6 @@ function SelectionRectangle:click(position)
     if self.drag_y then self.y = position.y end
     
   elseif self.drag_mode == 'move' and self.last_click_position then
-  
     -- V2: Accumulate drag and snap on distance > 1
     self.drag_dx = self.drag_dx + (position.x - self.last_click_position.x)
     self.drag_dy = self.drag_dy + (position.y - self.last_click_position.y)
@@ -351,10 +377,10 @@ function SelectionRectangle:click(position)
     -- self.last_click_position = position
     end
     
-  self:draw()
+  -- self:draw()
   -- blip({self.a, self.b}, self.player)
   -- blip({self.x, self.y}, self.player)
-  
+  return self
   end
   
   

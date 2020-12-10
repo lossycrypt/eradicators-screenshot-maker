@@ -193,3 +193,69 @@ data:extend{{
     }
   }}
 --]]
+
+
+local styles = data.raw['gui-style'].default
+
+styles['er:screenshot-gui-advanced-option-table'] = {
+  type = 'table_style',
+  parent = nil,
+  column_widths = {
+    {column = 1, width = (256 - 24) / 2}, -- 116
+    {column = 2, width = (256 - 24) / 2},
+    },
+  column_alignments = {
+    {column = 1, alignment = 'middle-center'},
+    {column = 2, alignment = 'middle-center'},
+    {column = 3, alignment = 'middle-center'},
+    }
+  }
+  
+-- local switch_label_width = 38
+local switch_label_width = 64
+
+styles['er:screenshot-gui-advanced-option-switch'] = {
+  type = 'switch_style',
+  parent = 'switch',
+  -- width = 116,
+  horizontally_stretchable = 'off',
+  horizontally_squashable = 'off',
+  
+  maximum_horizontal_squash_size = 116,
+  
+  active_label =
+  {
+    type = "label_style",
+    font_color = {241, 190, 100},
+    font = "default-bold",
+    
+    width = switch_label_width,
+    horizontally_stretchable = 'off',
+    horizontally_squashable = 'off',
+    -- size = {switch_label_width,24},
+    minimal_width = switch_label_width,
+    maximal_width = switch_label_width,
+    natural_width = switch_label_width,
+    maximum_horizontal_squash_size = 116,  
+    
+  },
+  inactive_label =
+  {
+    type = "label_style",
+    font_color = default_font_color,
+    hovered_font_color = {255, 230, 192},
+    font = "default",
+
+    width = switch_label_width,
+    horizontally_stretchable = 'off',
+    horizontally_squashable = 'off',
+    -- size = {switch_label_width,24},
+    minimal_width = switch_label_width,
+    maximal_width = switch_label_width,
+    natural_width = switch_label_width,
+      
+    maximum_horizontal_squash_size = 116,
+  },
+  
+  flow = {},
+  }
