@@ -1,11 +1,10 @@
 --TODO: make invisible cursor box (copy "make_cursor_box" function to make util sprites).
 
+local CONST = require 'control/constants'
 
 
-local MOD_ROOT = '__eradicators-screenshot-maker__/'
-local asset = function(path) return (MOD_ROOT..path):gsub('/+','/') end
+local asset = function(path) return (CONST.MOD_ROOT..'assets/'..path):gsub('/+','/') end
 
-local ITEM_NAME = 'er:screenshot-camera'
 
 local ICONS_96 = {{
   icon     = asset 'camera.png',
@@ -22,10 +21,11 @@ local SPRITE_96 = {
 -- -------------------------------------------------------------------------- --
 
 data:extend{{ type = 'custom-input',
-  name = ITEM_NAME,
-  -- key_sequence = 'PRINTSCREEN',
-  key_sequence = 'F12',
+  name = CONST.ITEM_NAME,
+  key_sequence = 'PRINTSCREEN',
+  -- key_sequence = 'F12',
   order = 'a',
+  localised_name = {'shortcut-name.er:screenshot-camera'},
   }}
 
 -- -------------------------------------------------------------------------- --
@@ -34,12 +34,13 @@ data:extend{{ type = 'custom-input',
 
 data:extend{{
   type = 'shortcut',
-  name = ITEM_NAME,
+  name = CONST.ITEM_NAME,
   -- action = 'create-blueprint-item',
   action = 'lua',
-  -- item_to_create = ITEM_NAME,
-  associated_control_input = ITEM_NAME,
+  -- item_to_create = CONST.ITEM_NAME,
+  associated_control_input = CONST.ITEM_NAME,
   icon = SPRITE_96,
+  toggleable = true,
   }}
 
 -- -------------------------------------------------------------------------- --
@@ -82,7 +83,7 @@ data:extend{{
 data:extend{{
   -- This allows loading the selection-tool type item when mods are removed
   type = 'selection-tool',
-  name = ITEM_NAME .. '-2',
+  name = CONST.ITEM_NAME .. '-2',
   -- localised_name = {'item-name.blueprint'},
   icon = asset '/camera.png',
   icon_size = 96,
@@ -109,7 +110,7 @@ data:extend{{
 
 data:extend{{
   type = 'capsule',
-  name = ITEM_NAME,
+  name = CONST.ITEM_NAME,
   -- flags = {"hidden", "only-in-cursor", "spawnable"},
   flags = {"hidden", "only-in-cursor","not-stackable"}, --not stackable flag removes stack size number! :D
   -- draw_label_for_cursor_render = false,
@@ -138,7 +139,7 @@ data:extend{{
   
 data:extend{{
   type = 'capsule',
-  name = ITEM_NAME,
+  name = CONST.ITEM_NAME,
   -- flags = {"hidden", "only-in-cursor", "spawnable"},
   flags = {"hidden", "only-in-cursor","not-stackable"}, --not stackable flag removes stack size number! :D
   -- draw_label_for_cursor_render = false,
@@ -195,9 +196,52 @@ data:extend{{
 --]]
 
 
-local styles = data.raw['gui-style'].default
+data:extend{{
+  type = "font",
+  name = "er:selection-rectangle-label-font",
+  from = "default-semibold",
+  size = 32,
+  }}
+  
+  
+data:extend{{
+  key_sequence                 = ''                                ,
+  action                       = nil                               ,
+  alternative_key_sequence     = nil                               ,
+  consuming                    = nil                               ,
+  enabled                      = true                              ,
+  enabled_while_in_cutscene    = false                             ,
+  enabled_while_spectating     = false                             ,
+  item_to_create               = nil                               ,
+  linked_game_control          = 'mine'                            ,
+  name                         = CONST.EVENT.RIGHT_CLICK           ,
+  type                         = 'custom-input'                    ,
+  localised_description        = nil                               ,
+  localised_name               = nil ,
+  order                        = 'a'                               ,
+  }}
 
-styles['er:screenshot-gui-advanced-option-table'] = {
+data:extend{{
+  key_sequence                 = ''                       ,
+  enabled                      = true                     ,
+  linked_game_control          = 'rotate'                 ,
+  name                         = CONST.EVENT.ROTATE_RIGHT ,
+  type                         = 'custom-input'           ,
+  order                        = 'z1'                     ,
+  }}
+data:extend{{
+  key_sequence                 = ''                       ,
+  enabled                      = true                     ,
+  linked_game_control          = 'reverse-rotate'         ,
+  name                         = CONST.EVENT.ROTATE_LEFT  ,
+  type                         = 'custom-input'           ,
+  order                        = 'z1'                     ,
+  }}
+  
+
+local styles = data.raw['gui-style'].default
+  
+styles['er:screenshot-gui-status-table'] = {
   type = 'table_style',
   parent = nil,
   column_widths = {
@@ -205,11 +249,81 @@ styles['er:screenshot-gui-advanced-option-table'] = {
     {column = 2, width = (256 - 24) / 2},
     },
   column_alignments = {
-    {column = 1, alignment = 'middle-center'},
+    {column = 1, alignment = 'middle-left'  },
     {column = 2, alignment = 'middle-center'},
-    {column = 3, alignment = 'middle-center'},
     }
   }
+
+styles['er:screenshot-gui-advanced-option-table'] = {
+  type = 'table_style',
+  parent = nil,
+  column_widths = {
+    -- {column = 1, width = (256 - 24) / 2}, -- 116
+    -- {column = 2, width = (256 - 24) / 2},
+    {column = 1, width = (256 - 24) - 140}, -- 116
+    {column = 2, width = 140},
+    },
+  column_alignments = {
+    -- {column = 1, alignment = 'middle-center'},
+    {column = 1, alignment = 'middle-left'},
+    {column = 2, alignment = 'middle-center'},
+    }
+  }
+  
+-- -------------------------------------------------------------------------- --
+-- Aligned Switch Style                                                       --
+-- -------------------------------------------------------------------------- --
+  
+styles['er:screenshot-gui-aligned-switch-table'] = {
+  type = 'table_style',
+  parent = nil,
+  -- width = (256 - 24) / 2,
+  -- width = 
+  column_widths = {
+    {column = 1, width = 54}, -- 116
+    -- {column = 2, width = 40}, --default switch size
+    {column = 3, width = 54},
+    },
+  column_alignments = {
+    {column = 1, alignment = 'middle-right' },
+    {column = 2, alignment = 'middle-center'},
+    {column = 3, alignment = 'middle-left'  },
+    }
+  }
+-- Create stand-alone names for vanilla switch labels.
+styles['er:screenshot-gui-aligned-switch-inactive-label'] = 
+  util.table.deepcopy(styles['switch'].inactive_label)
+styles['er:screenshot-gui-aligned-switch-active-label'] = 
+  util.table.deepcopy(styles['switch'].active_label)
+
+styles['er:screenshot-gui-aligned-switch-inactive-label']
+  .left_click_sound = {{ filename = "__core__/sound/gui-switch.ogg", volume = 0.7 }}
+styles['er:screenshot-gui-aligned-switch-active-label']
+  .left_click_sound = {{ filename = "__core__/sound/gui-switch.ogg", volume = 0.7 }}
+  
+  
+  
+
+styles['er:screenshot-gui-bold-green-label'] = {
+  type = "label_style",
+  parent = "bold_label",
+  font_color = {0, 1, 0}
+  }
+
+styles['er:screenshot-gui-bold-yellow-label'] = {
+  type = "label_style",
+  parent = "bold_label",
+  font_color = {1, 1, 0}
+  }
+
+styles['er:screenshot-gui-bold-red-label'] = {
+  type = "label_style",
+  parent = "bold_label",
+  font_color = {1, 0, 0}
+  }
+  
+
+  
   
 -- local switch_label_width = 38
 local switch_label_width = 64
