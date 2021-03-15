@@ -490,7 +490,7 @@ function SelectionRectangle:rotate_by_direction(direction)
   -- Skip when player is not "holding down" the mouse button.
   if (not self.last_click_tick)
   or (self.last_click_tick + DRAG_TIMEOUT < game.tick) then
-    return
+    return self
     end
   
   local center = {

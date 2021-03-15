@@ -11,22 +11,28 @@
 
 --[[ Future:
 
-    Engine Bugs:
+    Engine Bugs (new/fixed):
       + LuaGuiElement "switch" does not fire events after loading.
         + broken in 1.0, fixed in 1.1
       + Using the built-in spawning mechanism of shortcuts sometimes doens't work.
         + Can't be bothered to make a bug report right now. From memory
         + pressing the hotkey didn't work? because it requires spawning in the
           hotkey prototype too?!
+
+    Engine Bugs (reported):
       + Quick-put (Ctrl+LMB) can be used to put the camera into objects
         + even if the object has no inventory! (like stone-rock)
         + even if the object is out of reach!
         ? uncertain reproducibility without mods
+        @ https://forums.factorio.com/viewtopic.php?f=7&t=93071
       + player sound without position is zoom dependant
+        @ https://forums.factorio.com/viewtopic.php?f=7&t=93067
       + notched slider has no tooltip for the slider itself only the bar.
+        @ https://forums.factorio.com/viewtopic.php?p=527432#p527432
       + Assigning a new style via style = 'name' to a LuaGuiElement
         that has style overrides makes the element lose all 
         override values after save/load even though it works during runtime.
+        @ https://forums.factorio.com/viewtopic.php?f=7&t=93070
 
     Modportal:
       + Animated gif that shows the gui and a factory scene,
@@ -39,9 +45,6 @@
 
 
     Features:
-      + align option switches
-      + make "r" rotate the area around the cursor :O
-      
       + Add a watermark to (large) screenshots :p (with mod option to disable)
         + Advanced option "Watermark show/hide"
         + lower right corner?
@@ -49,7 +52,6 @@
         
       + make SelectionRectangle a library compatible module
       + general code cleanup
-
 
     Large Features:
       + allow creating tiled screenshot for very large areas
@@ -69,10 +71,12 @@
         + Relative resizes the area when the player zooms in/out.
         + Absolute is standard mode.
       + Super-Screenshot-Mode
-        + Gui is removed
+        ? This should be the default mode, but is an optional "normal" mode needed?
+        + controller gui is hidden temporarily
+          + logically conflicts with "show gui".
         + Character is detached and player becomes god (spectator?)
         + zoom is fully linked
-        ? This should be the default mode, but is an optional "normal" mode needed?
+        + mouse-wheel to resize the currently-hovered canvas?
       + Transparent background option
         + copy stuff to new surface with transparent background
         + (Using build-from blueprint to exclude trees?) -> Nope, KISS

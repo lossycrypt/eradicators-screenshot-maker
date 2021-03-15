@@ -55,6 +55,21 @@ data:extend{{
     },
   volume = 1
 	}}
+
+data:extend{{
+  type = "sound",
+  name = 'er:gui-switch-click',
+  variations = {{
+    filename = "__core__/sound/gui-switch.ogg",
+    -- volume = 1,
+    -- preload = false,
+    }},
+  -- filename = "__core__/sound/gui-switch.ogg",
+  -- volume = 1
+  audible_distance_modifier = 1,
+	}}
+  
+  
   
 -- -------------------------------------------------------------------------- --
 -- Item                                                                       --
@@ -296,10 +311,10 @@ styles['er:screenshot-gui-aligned-switch-inactive-label'] =
 styles['er:screenshot-gui-aligned-switch-active-label'] = 
   util.table.deepcopy(styles['switch'].active_label)
 
-styles['er:screenshot-gui-aligned-switch-inactive-label']
-  .left_click_sound = {{ filename = "__core__/sound/gui-switch.ogg", volume = 0.7 }}
-styles['er:screenshot-gui-aligned-switch-active-label']
-  .left_click_sound = {{ filename = "__core__/sound/gui-switch.ogg", volume = 0.7 }}
+-- styles['er:screenshot-gui-aligned-switch-inactive-label']
+  -- .left_click_sound = {{ filename = "__core__/sound/gui-switch.ogg", volume = 0.7 }}
+-- styles['er:screenshot-gui-aligned-switch-active-label']
+  -- .left_click_sound = {{ filename = "__core__/sound/gui-switch.ogg", volume = 0.7 }}
   
   
   

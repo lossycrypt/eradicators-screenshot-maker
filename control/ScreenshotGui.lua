@@ -398,6 +398,7 @@ function ScreenshotGui:add_element(opts, args, ...)
 
 function ScreenshotGui:add_aligned_switch(opts, args, ...)
   if not opts.width then error('aligned switch needs width') end
+  --
   local switch_table = opts.parent.add{
     name  = args.name, -- element name
     type  = 'table',
@@ -407,44 +408,37 @@ function ScreenshotGui:add_aligned_switch(opts, args, ...)
     -- direction = 'horizontal',
     }
   switch_table.style.width = opts.width
-  -- switch_table.ignored_by_interaction = true
-
+  --
   self:add_element({
     parent = switch_table,
-    update = 'on_player_clicked_aligned_switch_label',
+    update = 'on_player_clicked_aligned_switch',
     },{
     type    = 'label',
-    -- name    = 'left_label', 
     style   = 'er:screenshot-gui-aligned-switch-inactive-label',
     caption = args.left_label_caption,
     },{
-    -- horizontal_align = 'right', -- unstyled flow instead of styled table?
+    -- horizontal_align = 'right', -- for flow
     -- width = (opts.width - 32) / 2, -- 32 == switch button width
     })
   self:add_element({
     name   = opts.name, -- storage name
     parent = switch_table,
-    update = 'on_player_clicked_aligned_switch_label',
+    update = 'on_player_clicked_aligned_switch',
     },{
     type                = 'switch',
-    name = 'aligned-switch',
+    name                = 'aligned-switch',
     switch_state        = CONST.GUI.DUMMY_SWITCH_STATE,
-    -- left_label_caption  = opts.off_caption,
-    -- right_label_caption = opts.on_caption,
-    -- allow_none_state    = opts.allow_none,
     allow_none_state    = args.allow_none_state,
-    -- style = 'er:screenshot-gui-advanced-option-switch',
     })
   self:add_element({
     parent = switch_table,
-    update = 'on_player_clicked_aligned_switch_label',
+    update = 'on_player_clicked_aligned_switch',
     },{
     type    = 'label',
-    -- name    = 'aligned_switch_right_label', 
     style   = 'er:screenshot-gui-aligned-switch-inactive-label',
     caption = args.right_label_caption,
     },{
-    -- horizontal_align = 'left', -- can it be done without a table?
+    -- horizontal_align = 'left', -- for flow
     -- width = (opts.width - 32) / 2,
     })
   if opts.update then
@@ -910,7 +904,7 @@ function ScreenshotGui:load_state()
   self:update_resolution()
   self:update_file_size()
   self:update_aligned_switch_labels()
-  print('state loaded')
+  -- print('state loaded')
   end
 
 
@@ -941,38 +935,33 @@ function ScreenshotGui:on_player_clicked_something(e)
     end
   end
 
-function ScreenshotGui:on_player_clicked_aligned_switch_label(elm, e)
+function ScreenshotGui:on_player_clicked_aligned_switch(elm, e)
   -- triggers for clicks on any of the three components!
-  print('click aligned label', game.tick)
   local switch_table = e.element.parent
-  if switch_table == e.element then
-    print('clicked table!')
-    return
-    end
+  if switch_table == e.element then return end
   local left_label  = switch_table.children[1]
   local switch      = switch_table.children[2]
   local right_label = switch_table.children[3]
-    -- switch.switch_state = (left_label == e.element) and 'left' or 'right'
-  if e.element == left_label then
-    switch.switch_state = 'left'
-  elseif e.element == right_label then
-    switch.switch_state = 'right'
+  --
+  local function switch_if_changed(side)
+    if switch.switch_state ~= side then
+      -- "gui_click" is not the correct sound for switches, but playing
+      -- custom sounds does not currently work at high zoom-out @factorio 1.1
+      self.player.play_sound {
+        path = 'utility/gui_click',
+        override_sound_type = 'gui-effect', -- 1.1.7
+        }
+      -- self.player.play_sound {path = 'er:gui-switch-click'}
+      switch.switch_state = side
+      end
     end
-  -- local switch_state = switch.switch_state
-  
-  -- if switch_state == 'left' then
-    -- left_label.style  = 'er:screenshot-gui-aligned-switch-active-label'
-    -- right_label.style = 'er:screenshot-gui-aligned-switch-inactive-label'
-    
-  -- elseif switch_state == 'right' then
-    -- left_label.style  = 'er:screenshot-gui-aligned-switch-inactive-label'
-    -- right_label.style = 'er:screenshot-gui-aligned-switch-active-label'
-    
-  -- else
-    -- left_label.style  = 'er:screenshot-gui-aligned-switch-inactive-label'
-    -- right_label.style = 'er:screenshot-gui-aligned-switch-inactive-label'
-    -- end
-    
+  if e.element == left_label then
+    switch_if_changed 'left'
+  elseif e.element == right_label then
+    switch_if_changed 'right'
+  else
+    -- switch.switch_state = 'none'
+    end
   --
   self:update_aligned_switch_labels()
   --
@@ -1157,23 +1146,13 @@ function ScreenshotGui:update_aligned_switch_labels()
     [true ] = 'er:screenshot-gui-aligned-switch-active-label'  ,
     [false] = 'er:screenshot-gui-aligned-switch-inactive-label',
     }
-
   for _, elm in pairs(self.elements) do
     if elm.name == 'aligned-switch' then
+      -- 1,2,3 -> left-label, switch, right-label
       local switch_table = elm.parent
       local switch_state = switch_table.children[2].switch_state
-      -- local this = {
-        -- left   = switch_table.children[1],
-        -- switch = switch_table.children[2],
-        -- right  = switch_table.children[3],
-        -- }
-      
       switch_table.children[1].style = _styles['left'  == switch_state]
       switch_table.children[3].style = _styles['right' == switch_state]
-      
-      -- switch_table.children[1].style.width = 54 -- debugtest
-      -- switch_table.children[3].style.width = 54
-      
       end
     end
   end
@@ -1270,6 +1249,7 @@ function ScreenshotGui:take_screenshot(elm, e)
   self.player.play_sound{
     path = 'er:camera-click',
     volume_modifier = 0.9,
+    override_sound_type = 'gui-effect', -- 1.1.7
     }
   end
   
