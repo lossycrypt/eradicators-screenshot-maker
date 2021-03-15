@@ -181,7 +181,7 @@ local function get_pdata (pindex)
 
 -- Can fail to give the player a camera when they have a full inventory.
 local function try_give_camera(p)
-  return p.clean_cursor()
+  return p.clear_cursor()
      and p.cursor_stack.set_stack { name = CONST.ITEM_NAME }
   end
 

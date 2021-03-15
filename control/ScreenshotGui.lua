@@ -1049,6 +1049,15 @@ function ScreenshotGui:on_player_changed_selected_area(selected_area)
 -- [Updaters read self.state and apply it to self.elements]                   --
 -- -------------------------------------------------------------------------- --
 
+function ScreenshotGui:restyle_zoom_text_field()
+  -- styler hotfix (needs re-application after "style" change)
+  Gui.apply_stylers(self.elements.zoom_text_field, {
+    width  = 32 + 24,
+    height = 24,
+    horizontal_align = 'center',
+    })
+  end
+
 
 -- Verify user input + apply zoom
 function ScreenshotGui:update_zoom()
@@ -1058,11 +1067,13 @@ function ScreenshotGui:update_zoom()
     self.elements.zoom_text_field .style   = 'invalid_value_textfield'
     self.elements.resolution_label.caption = {loc'zoom-invalid-label'}
     self.elements.file_size_label .caption = '0 KiB'
+    self:restyle_zoom_text_field()
     return false
     end
   -- valid
   self.elements.zoom_text_field.style = 'textbox'
   self.player.zoom = zoom_factor
+  self:restyle_zoom_text_field()
   -- update slider
   local function zoom_factor_to_zoom_step_index()
     -- @future: reverse scan order to prevent accidential very-far zoomout

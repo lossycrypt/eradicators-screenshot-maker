@@ -1,4 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 3.0.5
+Date: 2021-03-15
+  Major Features:
+    - Updated factorio version to 1.1.
+  Bugfixes:
+    - Gui click sound volume was zoom dependant.
+    - Fixed zoom text field had wrong size after style change.
+---------------------------------------------------------------------------------------------------
+Version: 3.0.4
+Date: 2020-12-13
+  Bugfixes:
+    - Fixed crash when trying to rotate without selecting a canvas.
+---------------------------------------------------------------------------------------------------
 Version: 3.0.3
 Date: 2020-12-13
   Minor Features:
@@ -63,3 +76,8 @@ Version: 1.0.0
 Date: 2016-07-30
   Major Features:
     - Initial Release.
+---------------------------------------------------------------------------------------------------
+Version: 0.0.1
+Date: 0000-00-00
+  Todo:
+    - Nothing.
