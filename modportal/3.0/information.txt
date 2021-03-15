@@ -1,0 +1,22 @@
+﻿How to use:
+-----
+1. Press F12 to get a camera tool.
+2. Draw a box around the area you want to take a picture of. If you hold shift while drawing the box you can skip the next step.
+3. Change any settings you want and press "Make it so!".
+-----
+Gebrauchsanweisung:
+-----
+1. Drücke F12 um eine Kamera zu bekommen.
+2. Zieh einen Rahmen um das Gebiet das du fotographieren willst. Wenn du dabei Umschalt gedrückt hälst kannst du den nächsten Schritt überspringen.
+3. Ändere die Einstellungen nach belieben und drück "Sag cheese!".
+-----
+使い方：
+-----
+1. Ｆ１２を押してカメラツールをゲットしましょう。
+2. カメラで撮りたい地域を枠で囲みます。シフトキーを押したまま枠を作ると次のステップは省略できます。
+3. 設定を確認した後「撮る！」を押せば完成です。
+
+# Upcoming
+
+
+https://forums.factorio.com/download/file.php?id=65632

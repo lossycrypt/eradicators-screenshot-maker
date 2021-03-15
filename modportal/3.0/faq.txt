@@ -1,0 +1,11 @@
+﻿Q: How is this different than using the print key / a third party screenshot tool?
+
+A: Screenshot Hotkey takes the screenshot directly in the game at default zoom (press F9 to reset zoom to compare). This means it can take screenshots that are much larger than your screen. It can also hide the user interface.
+_____
+Q: I can't find the screenshots i made?
+
+A: The screenshots are in the folder where your savegames are in an extra folder called "script-output". On windows this might be something like C:\Users\<username>\AppData\Factorio\script-output\screenshot_123.png. If you use the zip version it should be in the folder that you unzipped it to.
+_____
+Q: My game/computer froze while taking a screenshot!
+
+A: While small screenshots usually take less than a second, taking a picture of your whole factory can take more than 15 minutes depending on your computer. So don't panic, be patient. Or use Alt-F4 to quit the game if you don't want to wait.

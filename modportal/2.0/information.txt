@@ -1,0 +1,11 @@
+﻿
+# Features
+
+Adds a Screenshot Camera accessible via shortcut (right of quickbar) and hotkey (default: Printscreen). Holding the camera in the cursor will open the screenshot menu. You can then adjust settings, use the camera-cursor to select a limited area or just take a full-screen picture right away. If you selected an area you can also drag, rotate and resize it afterwards.
+
+
+# Demo
+
+You can see the camera draging rotating and resizing here:
+https://forums.factorio.com/download/file.php?id=65632
+(I wish the modportal supported embedded videos...)

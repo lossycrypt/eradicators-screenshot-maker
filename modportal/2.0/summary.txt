@@ -1,0 +1,5 @@
+﻿[English] Use the camera tool (default:F12) to take a screenshot of the selected area.
+
+[Deutsch] Benutze die Kamera (Standard:F12) um ein Bild des ausgewahlten Gebietes zu machen.
+
+[日本語] カメラツール（既定：Ｆ１２）をつかって選択した地域のスクショットを撮ります。

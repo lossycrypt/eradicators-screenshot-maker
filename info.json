@@ -8,6 +8,7 @@
   "license"          : "Creative Commons Attribution-NoDerivatives 4.0 International License",
   "description"      : "Makes tile-perfect screenshots at any resolution!",
   "dependencies"     : [
-    "base >= 1.1.27"
+    "base >= 1.1.27",
+    "! ScreenshotHotkey"
   ]
 }

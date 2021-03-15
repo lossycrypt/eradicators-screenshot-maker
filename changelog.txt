@@ -1,8 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 3.0.6
+Date: 2021-03-15
+  Bugfixes:
+    - Marked as incompatible with old mod name.
+---------------------------------------------------------------------------------------------------
 Version: 3.0.5
 Date: 2021-03-15
   Major Features:
     - Updated factorio version to 1.1.
+    - Changed internal mod name to "eradicators-screenshot-maker".
   Bugfixes:
     - Gui click sound volume was zoom dependant.
     - Fixed zoom text field had wrong size after style change.
@@ -80,4 +86,5 @@ Date: 2016-07-30
 Version: 0.0.1
 Date: 0000-00-00
   Todo:
-    - Nothing.
+    - Resolution and size estimate now reflect include/exclude size labels option.
+    - Added German and Japanese localization.
