@@ -214,7 +214,7 @@ local gws_keys = {
   'show_rail_block_visualisation' ,'show_controller_gui',
   'show_side_menu'                ,'show_minimap'       ,
   'show_map_view_options'         ,'show_research_info' ,
-  'show_quickbar'                 ,'show_entity_info'   ,
+  'show_quickbar'                 , -- 'show_entity_info'   , "entity_info" == alt-mode, wtf...
   'show_shortcut_bar'             ,'show_alert_gui'     ,
   }
 

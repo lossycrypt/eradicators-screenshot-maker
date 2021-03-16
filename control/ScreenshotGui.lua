@@ -333,10 +333,10 @@ function ScreenshotGui:open()
 
 
 -- A "box" inside the anchor.
-function ScreenshotGui:add_empty_frame(...)
+function ScreenshotGui:add_empty_frame(style, ...)
   local this = self.elements.main_anchor.add {
     type  = 'frame',
-    style = CONST.GUI.STYLE.CONTENT_FRAME,
+    style = style or CONST.GUI.STYLE.CONTENT_FRAME,
     direction = 'vertical',
     }
   -- this.drag_target = self.elements.main_anchor
@@ -347,8 +347,7 @@ function ScreenshotGui:add_empty_frame(...)
 
 -- A "box" with a title
 function ScreenshotGui:add_frame_with_header(args, ...)
-  local header_frame = self:add_empty_frame()
-  header_frame.style = CONST.GUI.STYLE.SUB_HEADER_FRAME
+  local header_frame = self:add_empty_frame(CONST.GUI.STYLE.SUB_HEADER_FRAME)
   local header_flow  = header_frame.add{
     type      = 'flow',
     direction = 'horizontal',
@@ -359,8 +358,7 @@ function ScreenshotGui:add_frame_with_header(args, ...)
     tooltip = args.tooltip,
     style   = CONST.GUI.STYLE.SUB_HEADER_LABEL,
     }
-  local content_frame = self:add_empty_frame(...)
-  content_frame.style = CONST.GUI.STYLE.CONTENT_FRAME
+  local content_frame = self:add_empty_frame(CONST.GUI.STYLE.CONTENT_FRAME, ...)
   return content_frame, header_frame, header_label, header_flow
   end
 
@@ -842,10 +840,10 @@ function ScreenshotGui:create_options_frame()
 function ScreenshotGui:create_final_frame()
 
   local this_frame = self:add_empty_frame(
-    -- {height = 40}
+    CONST.GUI.STYLE.FINAL_FRAME
+    -- , {height = 40}
     )
-  this_frame .style = CONST.GUI.STYLE.FINAL_FRAME
-    
+
   local this_flow = this_frame.add {
     type = 'flow',
     direction = 'horizontal',
@@ -859,8 +857,12 @@ function ScreenshotGui:create_final_frame()
     style   = 'red_back_button',
     caption = {loc'dialogue-button-exit'},
     },{
-    -- width = 64,
-    width = 16*5,
+    -- width = 16*5,
+    minimal_width = 16*3,
+    horizontally_stretchable = true,
+    horizontally_squashable  = true,
+    left_padding  = 2,
+    right_padding = 0,
     })
     
   self:add_element({
@@ -871,6 +873,11 @@ function ScreenshotGui:create_final_frame()
     style   = 'confirm_button',
     caption = {loc'dialogue-button-take-screenshot'},
     },{
+    minimal_width = 16*3,
+    horizontally_stretchable = true,
+    horizontally_squashable  = true,
+    left_padding  = 0,
+    right_padding = 2,
     })
 
   end

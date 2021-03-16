@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 3.0.7
+Date: 2021-03-16
+  Minor Features:
+    - Added Japanese locale.
+    - Added German locale.
+  Bugfixes:
+    - Some gui content frames had wrong width.
+    - Changed final frame to have variable size buttons for easier localization.
+---------------------------------------------------------------------------------------------------
 Version: 3.0.6
 Date: 2021-03-15
   Bugfixes:
@@ -87,4 +96,3 @@ Version: 0.0.1
 Date: 0000-00-00
   Todo:
     - Resolution and size estimate now reflect include/exclude size labels option.
-    - Added German and Japanese localization.
