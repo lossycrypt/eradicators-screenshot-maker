@@ -1,11 +1,26 @@
-﻿Q: How is this different than using the print key / a third party screenshot tool?
+﻿---
+# Where are the screenshots stored?
 
-A: Screenshot Hotkey takes the screenshot directly in the game at default zoom (press F9 to reset zoom to compare). This means it can take screenshots that are much larger than your screen. It can also hide the user interface.
-_____
-Q: I can't find the screenshots i made?
+* The screenshots are near the folder where your savegames are in an extra folder called "script-output". On windows this might be something like C:\Users\<username>\AppData\Factorio\script-output\screenshot_123.png. If you use the zip version it should be in the folder that you unzipped it to. See also the [factorio wiki] for help if you can't find them.
 
-A: The screenshots are in the folder where your savegames are in an extra folder called "script-output". On windows this might be something like C:\Users\<username>\AppData\Factorio\script-output\screenshot_123.png. If you use the zip version it should be in the folder that you unzipped it to.
-_____
-Q: My game/computer froze while taking a screenshot!
+  [factorio wiki]: https://wiki.factorio.com/Application_directory
 
-A: While small screenshots usually take less than a second, taking a picture of your whole factory can take more than 15 minutes depending on your computer. So don't panic, be patient. Or use Alt-F4 to quit the game if you don't want to wait.
+---
+# My game/computer froze while taking a screenshot!
+
+* While small screenshots usually take less than a second, taking large pictures can take many minutes depending on your computer. So don't panic, be patient. Or use Alt-F4 to quit the game if you don't want to wait.
+
+---
+# How is this different than using the print key / a third party screenshot tool?
+
+* Screenshot Maker Deluxe takes the screenshot directly in the game-engine. This means it can take screenshots that are much larger than your screen. It can also hide the user interface, adjust the day/night time, and more.
+
+---
+# The in-game mod updater doesn't find the update for Factorio 1.1 and above.
+
+* Due to an internal name change the updater thinks the old and new versions are different mods. Just delete the old version, then go to the "Install" tab and install the new version (3.0 or above). You can also download it directly here from the portal.
+
+---
+# I see two versions of the mod in my in-game mod list.
+
+* You can safely delete the older version (2.1 and below).

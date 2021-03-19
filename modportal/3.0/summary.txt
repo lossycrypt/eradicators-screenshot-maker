@@ -1,8 +1,3 @@
 ﻿Makes tile-perfect screenshots at any resolution!
 
-(Languages: English)
-
-
-Future:
-
 (Languages: English, Deutsch, 日本語)
