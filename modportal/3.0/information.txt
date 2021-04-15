@@ -7,5 +7,5 @@ Adds a Screenshot Camera accessible via shortcut (right of quickbar) and hotkey 
 # Demo
 
 You can see the camera draging rotating and resizing here:
-https://forums.factorio.com/download/file.php?id=65632
-(I wish the modportal supported embedded videos...)
+
+[![Demo Video](https://github.com/lossycrypt/lossycrypt.github.io/raw/master/factorio-modportal/screenshot-maker-resize-and-move-demonstration-thumbnail.png)](https://lossycrypt.github.io/#screenshot-maker)

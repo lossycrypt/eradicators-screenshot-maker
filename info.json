@@ -2,13 +2,13 @@
   "title"            : "Eradicator's Screenshot Maker Deluxe 3.0",
   "name"             : "eradicators-screenshot-maker",
   "author"           : "eradicator",
-  "version"          : "3.0.8",
+  "version"          : "3.0.9",
   "factorio_version" : "1.1",
   "contact"          : "Check the mod portal \"Discussions\" tab (link below).",
   "license"          : "Creative Commons Attribution-NoDerivatives 4.0 International License",
   "description"      : "Makes tile-perfect screenshots at any resolution!",
   "dependencies"     : [
-    "base >= 1.1.27",
+    "base >= 1.1.32",
     "! ScreenshotHotkey"
   ]
 }
