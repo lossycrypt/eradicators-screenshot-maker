@@ -150,12 +150,17 @@ script.on_init(init)
 script.on_configuration_changed(init)
 script.on_load(onload)
 
-
   
 -- -------------------------------------------------------------------------- --
 -- Savedata (pdata)                                                           --
 -- -------------------------------------------------------------------------- --
 
+-- "Map Editor" mode deletes players on every load.
+script.on_event(defines.events.on_player_removed, function(e)
+  Savedata.players[e.player_index] = nil
+  end)
+
+  
 -- The full default values for each player
 local function get_default_pdata(pindex)
   local p = game.players[pindex]
@@ -185,7 +190,7 @@ local function get_pdata (pindex)
    or Table.set(Savedata, {'players', pindex}, get_default_pdata(pindex))
   if not pdata.player.valid then pdata.player = game.players[pindex] end
   return pdata  
-  end  
+  end
 
   
 -- -------------------------------------------------------------------------- --
@@ -417,3 +422,4 @@ script.on_event({
       end
       
     end)
+
