@@ -2,7 +2,7 @@
 Version: 3.0.9
 Date: 2021-04-16
   Bugfixes:
-    - Added missing handling of on_player_removed event.
+    - Added missing handler for on_player_removed event.
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.8
 Date: 2021-04-15

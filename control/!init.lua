@@ -178,19 +178,6 @@ local function get_pdata (pindex)
       or Table.set(Savedata, {'players', pindex}, get_default_pdata(pindex))
   end
 
-  
--- https://github.com/lossycrypt/eradicators-screenshot-maker/issues/1
--- Somehow someone managed to get an invalid LuaPlayer wrapper.
--- Hotfix: Always verify. Makes caching it kinda pointless >_>.
--- Player removed from game?
-local function get_pdata (pindex)
-  -- Performance: Only create default table when needed.
-  local pdata
-    = Table.get(Savedata, {'players', pindex})
-   or Table.set(Savedata, {'players', pindex}, get_default_pdata(pindex))
-  if not pdata.player.valid then pdata.player = game.players[pindex] end
-  return pdata  
-  end
 
   
 -- -------------------------------------------------------------------------- --
