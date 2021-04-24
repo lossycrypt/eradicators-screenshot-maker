@@ -1107,18 +1107,35 @@ function ScreenshotGui:update_resolution()
   self.resolution.x = math.ceil(32 * area_width  * zoom_factor)
   self.resolution.y = math.ceil(32 * area_height * zoom_factor)
   --
-  self.elements.resolution_label.caption
-    = ('%s x %s'):format(self.resolution.x, self.resolution.y)
-  --
-  local long_side = math.max(self.resolution.x, self.resolution.y)
   if math.min(self.resolution.x, self.resolution.y) == 0 then
     self.elements.resolution_label.style = 'label'
-  elseif long_side < 4096 then
-    self.elements.resolution_label.style = 'er:screenshot-gui-bold-green-label'
-  elseif long_side < 16384 then
-    self.elements.resolution_label.style = 'er:screenshot-gui-bold-yellow-label'
+    -- Full-Screen Mode Patch
+    local res = self.player.display_resolution
+    self.elements.resolution_label.caption
+      = ('[%s x %s]'):format(res.width, res.height)
+  --
   else
-    self.elements.resolution_label.style = 'er:screenshot-gui-bold-red-label'
+    local zoom = tonumber(self.states.zoom_text_field.text)
+    if not (zoom and zoom > 0) then return end
+    -- include labels? (only when larger than 0x0!)
+    if CONST.GUI.ON_OFF_SWITCH_STATE[
+      self.states.include_size_labels_switch.switch_state]
+      then
+      self.resolution.x = self.resolution.x + ((2*32) * zoom)
+      self.resolution.y = self.resolution.y + ((2*32) * zoom)
+      end
+    --
+    self.elements.resolution_label.caption
+      = ('%s x %s'):format(self.resolution.x, self.resolution.y)
+    --
+    local long_side = math.max(self.resolution.x, self.resolution.y)
+    if long_side < 4096 then
+      self.elements.resolution_label.style = 'er:screenshot-gui-bold-green-label'
+    elseif long_side < 16384 then
+      self.elements.resolution_label.style = 'er:screenshot-gui-bold-yellow-label'
+    else
+      self.elements.resolution_label.style = 'er:screenshot-gui-bold-red-label'
+      end
     end
   --
   return self.resolution
@@ -1136,7 +1153,9 @@ function ScreenshotGui:update_file_size()
     ratio = ratio * (quality / 100)
     end
   
-  local width, height = self.resolution.x, self.resolution.y
+  local res    = self.player.display_resolution -- Full-Screen Mode Patch
+  local width  = (self.resolution.x > 0) and self.resolution.x or res.width
+  local height = (self.resolution.y > 0) and self.resolution.y or res.height
   local bit_depth = 32
   local bits_per_byte = 8
   local size = ratio * (width * height) * bit_depth / bits_per_byte
@@ -1237,23 +1256,15 @@ function ScreenshotGui:take_screenshot(elm, e)
     y = selected_area.left_top.y + area_height / 2,
     }
   
-  -- resolution
+  -- resolution (already includes label size)
+  args. resolution = self.resolution
   if math.min(self.resolution.x, self.resolution.y) <= 0
   or math.max(self.resolution.x, self.resolution.y) >  16384
-  then  
+  then
     -- Invalid resolution -> Use Full-Screen Mode
     local res = self.player.display_resolution
     args .resolution = {x = res.width, y = res.height}
     args .position   = self.player.position
-  else
-    args. resolution = self.resolution
-    -- include labels?
-    if CONST.GUI.ON_OFF_SWITCH_STATE[
-      self.states.include_size_labels_switch.switch_state]
-      then
-      args.resolution.x = args.resolution.x + (64 * args.zoom)
-      args.resolution.y = args.resolution.y + (64 * args.zoom)
-      end
     end
     
   -- take screenshot

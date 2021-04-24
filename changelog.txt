@@ -1,8 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 3.0.10
+Date: 2021-04-24
+  Bugfixes:
+    - Size Labels option is now factored into resolution and file size estimate.
+    - Resolution and file size estimate are now also shown for full-screen mode.
+---------------------------------------------------------------------------------------------------
 Version: 3.0.9
 Date: 2021-04-16
   Bugfixes:
-    - Added missing handler for on_player_removed event.
+    - Added missing handler for on_player_removed event. (Replaces 3.0.8 hotfix.)
 ---------------------------------------------------------------------------------------------------
 Version: 3.0.8
 Date: 2021-04-15
@@ -105,4 +111,4 @@ Date: 2016-07-30
 Version: 0.0.1
 Date: 0000-00-00
   Todo:
-    - Resolution and size estimate now reflect include/exclude size labels option.
+    - ?
