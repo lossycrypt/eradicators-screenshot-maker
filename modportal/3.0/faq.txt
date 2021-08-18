@@ -16,6 +16,11 @@
 * Screenshot Maker Deluxe takes the screenshot directly in the game-engine. This means it can take screenshots that are much larger than your screen. It can also hide the user interface, adjust the day/night time, and more.
 
 ---
+# What file formats are supported?
+
+* All formats that the engine supports work: bmp, png, jpg, tif, and gif (not animated).
+
+---
 # The in-game mod updater doesn't find the update for Factorio 1.1 and above.
 
 * Due to an internal name change the updater thinks the old and new versions are different mods. Just delete the old version, then go to the "Install" tab and install the new version (3.0 or above). You can also download it directly here from the portal.

@@ -8,9 +8,9 @@ local CONST = {
   ITEM_NAME = 'er:screenshot-camera',
   
   EVENT = {
-    RIGHT_CLICK  = 'er:screenshot-camera:right-click', -- linked input
-    ROTATE_RIGHT = 'er:screenshot-camera:rotate-right',
-    ROTATE_LEFT  = 'er:screenshot-camera:rotate-left',
+    RIGHT_CLICK  = 'on_linked_input_mine', -- linked input
+    ROTATE_RIGHT = 'on_linked_input_rotate',
+    ROTATE_LEFT  = 'on_linked_input_reverse_rotate',
     },
   
   -- MISC

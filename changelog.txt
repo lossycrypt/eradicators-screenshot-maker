@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 3.0.12
+Date: 2021-08-18
+  Bugfixes:
+    - Fixed (yet another) crash when trying to rotate without selecting a canvas.
+---------------------------------------------------------------------------------------------------
+Version: 3.0.11
+Date: 2021-04-26
+  Internal:
+    - Changed custom inputs to use erlib-style on_linked_input_* names.
+  Bugfixes:
+    - Removed one pixel wide white border from screenshots without size labels.
+---------------------------------------------------------------------------------------------------
 Version: 3.0.10
 Date: 2021-04-24
   Bugfixes:
@@ -107,8 +119,3 @@ Version: 1.0.0
 Date: 2016-07-30
   Major Features:
     - Initial Release.
----------------------------------------------------------------------------------------------------
-Version: 0.0.1
-Date: 0000-00-00
-  Todo:
-    - ?

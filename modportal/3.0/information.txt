@@ -3,9 +3,17 @@
 
 Adds a Screenshot Camera accessible via shortcut (right of quickbar) and hotkey (default: Printscreen). Holding the camera in the cursor will open the screenshot menu. You can then adjust settings, use the camera-cursor to select a limited area or just take a full-screen picture right away. If you selected an area you can also drag, rotate and resize it afterwards.
 
+# Resolution
+
+Currently the maximum supported screenshot resolution is 16384 x 16384. At maximum vanilla zoom-out this is an area of 2048 x 2048 tiles, or 64 x 64 chunks, or about 130 Full-HD Screens. With custom super-zoom even larger areas can be fit into a single screenshot.
 
 # Demo
 
 You can see the camera draging rotating and resizing here:
+
+![Demo1](https://github.com/lossycrypt/lossycrypt.github.io/blob/master/factorio-modportal/screenshot-maker-01-yv12-reencode.webm?raw=true)
+
+
+# Old hacky video link:
 
 [![Demo Video](https://github.com/lossycrypt/lossycrypt.github.io/raw/master/factorio-modportal/screenshot-maker-resize-and-move-demonstration-thumbnail.png)](https://lossycrypt.github.io/#screenshot-maker)

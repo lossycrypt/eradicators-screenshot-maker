@@ -240,8 +240,11 @@ function ScreenshotGui:close()
 
 do  
   local offsets = {
-    show_minimap       = {height = 256, width = 254},
-    show_research_info = {height = 36 },
+    -- @2021-07-13: Seems they changed it again.
+    -- show_minimap       = {height = 256, width = 254},
+    -- show_research_info = {height = 36 },
+    show_minimap       = {height = 256, width = 256},
+    show_research_info = {height = 52 },
     show_side_menu     = {height = 52 }, -- the button row above the minimap
     }
 function ScreenshotGui:get_gui_default_location()
@@ -1131,7 +1134,7 @@ function ScreenshotGui:update_resolution()
     local long_side = math.max(self.resolution.x, self.resolution.y)
     if long_side < 4096 then
       self.elements.resolution_label.style = 'er:screenshot-gui-bold-green-label'
-    elseif long_side < 16384 then
+    elseif long_side <= 16384 then
       self.elements.resolution_label.style = 'er:screenshot-gui-bold-yellow-label'
     else
       self.elements.resolution_label.style = 'er:screenshot-gui-bold-red-label'

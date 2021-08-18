@@ -197,7 +197,10 @@ function SelectionRectangle:purge_invalid_render_uids()
     end
   end
 
-
+-- If this rectangle has not recieved any clicks it
+-- does not have any coordinates so most methods will fail.
+function SelectionRectangle:is_initialized()
+  return not not self.last_click_tick end
   
 -- -------------------------------------------------------------------------- --
 -- SelectionRectangle (draw)                                                  --
@@ -233,10 +236,13 @@ function SelectionRectangle:draw_outer_rect()
     self.render_uids.outer_rect = uid
     end
   --
-  rendering.set_left_top    (uid, {self.outer_rect.l, self.outer_rect.t})
-  rendering.set_right_bottom(uid, {self.outer_rect.r, self.outer_rect.b})
+  -- Add one pixel (measured in factorio tiles) to prevent the
+  -- border from being visible on screenshots without labels.
+  local px = 1/32
+  rendering.set_left_top    (uid, {self.outer_rect.l-px, self.outer_rect.t-px})
+  rendering.set_right_bottom(uid, {self.outer_rect.r+px, self.outer_rect.b+px})
   end
-  
+
   
 function SelectionRectangle:sget_text_render(name, orientation)
   local uid = self.render_uids[name]

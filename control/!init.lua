@@ -360,7 +360,8 @@ script.on_event({
   CONST.EVENT.ROTATE_LEFT ,
   }, function(e)
   local pdata = get_pdata(e.player_index)
-  if has_player_camera(pdata.player) then
+  if has_player_camera(pdata.player)
+  and pdata.selection_rectangle:is_initialized() then
     if e.input_name == CONST.EVENT.ROTATE_RIGHT then
       pdata.selection_rectangle:rotate_right():draw()
     else
